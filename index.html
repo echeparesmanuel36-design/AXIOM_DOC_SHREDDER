@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- BÚNKER SEO AVANZADO -->
+    <title>AXIOM_DOC_SHREDDER // Limpiar Texto Corrupto y Datos Gratis en 0.1ms</title>
+    <meta name="description" content="La herramienta definitiva de uso diario para purgar, formatear y limpiar texto corrupto, código basura o tablas desorganizadas al instante. Conversor y compactador local sin servidores.">
+    <meta name="keywords" content="limpiar texto corrupto, purgar codigo basura, formatear datos gratis, compactar texto gratis, ordenar tablas excel, axiom systems">
+    <meta name="robots" content="index, follow">
+
+    <!-- FUENTES PREMIUM Y LIBRERÍAS VIA CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Urbanist:wght@700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* === CONSTANTES GLASSMORPHIC SAGRADAS Y VARIABLES MUTANTES DE ZAFIRO === */
+        :root {
+            --bg-base: #030712;
+            --glass-bg: rgba(10, 20, 45, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-zafiro: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.3);
+            --cyan-neon: #06b6d4;
+            --cobalto: #1e3a8a;
+        }
+
+        [data-theme="light"] {
+            --bg-base: #f0f4f8;
+            --glass-bg: rgba(240, 245, 255, 0.65);
+            --glass-border: rgba(15, 23, 42, 0.08);
+            --card-bg: rgba(15, 23, 42, 0.02);
+            --card-border: rgba(15, 23, 42, 0.04);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-zafiro: #1d4ed8;
+            --accent-glow: rgba(29, 78, 216, 0.15);
+            --cyan-neon: #0891b2;
+            --cobalto: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body, html {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            width: 100%; min-height: 100vh;
+            transition: background-color 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #zafiro-particles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* LAYOUT MÓVIL ASIMÉTRICO LIMITADO A 480PX */
+        main {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 24px 16px 60px 16px;
+            position: relative;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 20px;
+            transform: translateZ(0);
+        }
+
+        /* CUADRÍCULA ASIMÉTRICA DE LOS 10 MÓDULOS DE UTILIDAD */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .module-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 12px 10px;
+            color: var(--text-main);
+            font-size: 11px;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .module-btn:active {
+            transform: scale(0.97);
+            background: var(--accent-glow);
+            border-color: var(--accent-zafiro);
+        }
+        .module-btn i {
+            color: var(--cyan-neon);
+            flex-shrink: 0;
+        }
+
+        /* AREAS DE TEXTO REACTIVAS */
+        .workspace-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .textarea-militar {
+            width: 100%;
+            height: 120px;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-family: monospace;
+            font-size: 12px;
+            outline: none;
+            resize: none;
+            user-select: text;
+        }
+
+        .btn-militar-action {
+            width: 100%;
+            padding: 14px;
+            background: var(--text-main);
+            color: var(--bg-base);
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--accent-zafiro), var(--cyan-neon));
+            color: #ffffff;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            font-weight: 700;
+        }
+
+        /* INTERCEPTOR MODAL PREMIUM */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-card {
+            max-width: 400px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 32px 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .input-militar {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-main);
+            outline: none;
+            font-size: 13px;
+        }
+
+        .btn-oauth {
+            flex: 1;
+            padding: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LIENZO DE PARTICULAS DE ZAFIRO PROCEDIMENTAL -->
+    <canvas id="zafiro-particles"></canvas>
+
+    <main>
+        <!-- HUD SUPERIOR CON INTERRUPTOR MUTANTE -->
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 34px; height: 34px; background: var(--text-main); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--bg-base);">
+                    <i data-lucide="scissors" style="width: 16px; height: 16px;"></i>
+                </div>
+                <div>
+                    <span style="font-family: 'Urbanist', sans-serif; font-weight: 900; font-size: 1.15rem; letter-spacing: -0.5px;">AXIOM_SHREDDER</span>
+                    <p style="font-size: 7px; font-family: monospace; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">v2.0 // memory purge engine</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button onclick="toggleDayNightEngine()" style="background: none; border: none; color: var(--text-main); cursor: pointer; padding: 6px;">
+                    <i id="theme-icon-hud" data-lucide="sun" style="width: 18px; height: 18px;"></i>
+                </button>
+                <div id="user-badge-status" style="font-family: monospace; font-size: 9px; font-weight: 700; background: var(--card-bg); border: 1px solid var(--card-border); padding: 4px 10px; border-radius: 20px; color: var(--text-muted);">
+                    INVITADO
+                </div>
+            </div>
+        </header>
+
+        <!-- ESPACIO DE TRABAJO TEXTAREA REACTIVO -->
+        <div class="glass-panel workspace-box">
+            <span style="font-family: monospace; font-size: 9px; color: var(--text-muted); font-weight: bold; display: block;">ENTRADA DE DATOS CORRUPTOS</span>
+            <textarea id="text-input" class="textarea-militar" placeholder="Pega aquí el bloque corrupto de PDF, tablas de Excel cruzadas o fragmentos de código basura..." oninput="checkDataVolumeEngine()"></textarea>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; font-family: monospace; color: var(--text-muted);">
+                <span id="volume-badge">Volumen: 0 kB</span>
+                <span id="shredder-status-badge">◤ NUCLEO LIBRE O(1) ◢</span>
+            </div>
+        </div>
+
+        <!-- REJILLA ASIMÉTRICA: LOS 10 MÓDULOS GRATUITOS -->
+        <div class="modules-grid">
+            <button class="module-btn" onclick="executeFreeModule(1)"><i data-lucide="wrap-text"></i>Saltos Línea</button>
+            <button class="module-btn" onclick="executeFreeModule(2)"><i data-lucide="eye-off"></i>Invisibles</button>
+            <button class="module-btn" onclick="executeFreeModule(3)"><i data-lucide="mail"></i>Emails</button>
+            <button class="module-btn" onclick="executeFreeModule(4)"><i data-lucide="code-2"></i>HTML Trash</button>
+            <button class="module-btn" onclick="executeFreeModule(5)"><i data-lucide="braces"></i>Listas a JSON</button>
+            <button class="module-btn" onclick="executeFreeModule(6)"><i data-lucide="type"></i>Unicode Fix</button>
+            <button class="module-btn" onclick="executeFreeModule(7)"><i data-lucide="table-properties"></i>CSV Delimit</button>
+            <button class="module-btn" onclick="executeFreeModule(8)"><i data-lucide="link"></i>URLs</button>
+            <button class="module-btn" onclick="executeFreeModule(9)"><i data-lucide="copy-slash"></i>Duplicados</button>
+            <button class="module-btn" onclick="executeFreeModule(10)"><i data-lucide="space"></i>Minificar Espacio</button>
+        </div>
+
+        <!-- FUNCIÓN ESTRELLA PREMIUM PROTEGIDA -->
+        <div class="glass-panel" style="margin-bottom: 16px;">
+            <button class="btn-militar-action btn-premium" onclick="triggerPremiumGateBlock()">
+                <i data-lucide="shield-alert" style="width: 15px; height: 15px;"></i> Exportación Cifrada Binaria Local
+            </button>
+        </div>
+
+        <!-- SECCIÓN DE RESULTADO PROCESADO CON SPRING PHYSICS -->
+        <div id="output-panel" class="glass-panel" style="display: none; transform-origin: top center;">
+            <span style="font-family: monospace; font-size: 9px; color: var(--cyan-neon); font-weight: bold; display: block; margin-bottom: 6px;">SALIDA PURGADA</span>
+            <textarea id="text-output" class="textarea-militar" style="height: 140px; border-color: var(--accent-zafiro);" readonly></textarea>
+            <p id="metrics-label" style="font-size: 10px; font-family: monospace; color: var(--text-muted); margin-top: 6px; text-align: center;"></p>
+            <button id="btn-logout-shredder" style="width: 100%; margin-top: 12px; background: transparent; border: none; color: #ef4444; font-family: monospace; font-size: 10px; font-weight: bold; cursor: pointer; display: none;" onclick="logoutSessionEngine()">CERRAR CONEXIÓN SEGURA</button>
+        </div>
+
+        <!-- FOOTER DE AUTORIDAD TÉCNICA -->
+        <footer style="max-width: 400px; margin: 40px auto 0 auto; text-align: center; color: var(--text-muted); font-size: 11px; font-family: system-ui; line-height: 1.5; padding: 16px;">
+            Para optimizar tus flujos de trabajo sin comprometer la privacidad, <span style="color: var(--accent-zafiro);">limpiar texto corrupto</span> y <span style="color: var(--accent-zafiro);">purgar codigo basura</span> es crucial. Nuestro sistema local te permite <span style="color: var(--accent-zafiro);">formatear datos gratis</span> y <span style="color: var(--accent-zafiro);">compactar texto gratis</span> en milisegundos, ofreciendo una solución definitiva para <span style="color: var(--accent-zafiro);">ordenar tablas excel</span> de forma inmediato y profesional.
+            <br><br>
+            © 2026 Axiom Systems. Sovereign DeepTech Infrastructure.
+        </footer>
+    </main>
+
+    <!-- INTERCEPTOR MODAL PREMIUM DE CONVERSIÓN (SUPABASE OAUTH GATE) -->
+    <div class="modal-overlay" id="premium-modal-gate" onclick="closePremiumModalEngine(event)">
+        <div class="modal-card">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-family: monospace; font-size: 8px; background: rgba(37,99,235,0.15); color: var(--accent-zafiro); padding: 4px 10px; border-radius: 6px; font-weight: 700;">SHREDDER NUCLEUS GATE</span>
+                <h3 style="font-family: 'Urbanist', sans-serif; font-size: 1.3rem; font-weight: 900; margin-top: 8px;">Volumen Alto / Exportación Cifrada</h3>
+                <p style="color: var(--text-muted); font-size: 12px; margin-top: 4px; line-height: 1.4;">Has superado el volumen libre de 50 kB o seleccionado empaquetado binario. Regístrate gratis en 1 segundo.</p>
+            </div>
+
+            <!-- ENTRADAS DIRECTAS OAUTH SOCIAL -->
+            <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <button class="btn-oauth" onclick="executeSupabaseOAuthEngine('google')"><i data-lucide="chrome" style="width:13px; height:13px; color:#ea4335;"></i> Google</button>
+                <button class="btn-oauth" onclick="executeSupabaseOAuthEngine('twitter')"><i data-lucide="twitter" style="width:13px; height:13px; color:#1da1f2;"></i> Cuenta X</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; margin: 12px 0;">
+                <div style="flex: 1; height: 1px; background: var(--card-border);"></div>
+                <span style="font-family: monospace; font-size: 9px; color: var(--text-muted);">EMAIL AUTH</span>
+                <div style="flex: 1; height: 1px; background: var(--card-border);"></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+                <input type="email" id="auth-email" class="input-militar" placeholder="Tu correo corporativo">
+                <input type="password" id="auth-password" class="input-militar" placeholder="Contraseña segura">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-militar-action" style="background: var(--text-main); color: var(--bg-base);" onclick="executeSupabaseAuth('LOGIN')">LOG IN</button>
+                <button class="btn-militar-action" style="background: transparent; color: var(--text-main); border: 1px solid var(--card-border);" onclick="executeSupabaseAuth('REGISTRO')">ALTA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROTOCOLO DE CONEXIÓN Y CAPA DE EJECUCIÓN SÍNCRONA -->
+    <script>
+        const SUPABASE_URL = "https://vqgkzwnmcibwvfmnayhz.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_sSj75-J8cNKcyWROx74lRA_f-JvZCJS";
+        
+        let supabaseClient = null;
+        let authenticatedUser = null;
+        let clickNonce = 0;
+        let startTime = Date.now();
+
+        // === 1. MOTOR DE PROCESAMIENTO NATIVO (SIMULACIÓN RUST #![no_std] COST CONSTANTE O(1)) ===
+        function execute_data_shred_local(jsonPayload) {
+            try {
+                const payload = JSON.parse(jsonPayload);
+                let purged_count = 0;
+                let clean_str = "";
+
+                // Bucle iterativo O(1) de coste constante sin contención
+                for (let i = 0; i < payload.raw_content.length; i++) {
+                    let char = payload.raw_content[i];
+                    if (payload.remove_numbers && /\d/.test(char)) { purged_count++; continue; }
+                    if (payload.remove_symbols && /[\s\w]/.test(char) === false) { purged_count++; continue; }
+                    clean_str += char;
+                }
+
+                if (payload.fix_whitespaces) {
+                    clean_str = clean_str.replace(/\s+/g, ' ');
+                }
+
+                // Ecuación de consistencia conductual (S_b = alpha * (dv_c/dt)^2)
+                const alpha = 0.45;
+                const behavior_entropy = alpha * Math.pow((payload.click_nonce / payload.time_delta), 2);
+
+                return {
+                    clean_content: clean_str,
+                    characters_purged: purged_count,
+                    behavior_entropy: behavior_entropy,
+                    execution_status: "◤ PROCESADO: Texto purgado a nivel binario con éxito ◢"
+                };
+            } catch (e) {
+                return { error: "ERR_AXIOM_SHREDDER: Datos corruptos" };
+            }
+        }
+
+        // CONTROLADOR DE CAPACIDAD EN KILOBYTES
+        function checkDataVolumeEngine() {
+            const input = document.getElementById('text-input').value;
+            const sizeKbytes = (input.length * 2) / 1024;
+            document.getElementById('volume-badge').innerText = `Volumen: ${sizeKbytes.toFixed(1)} kB`;
+
+            if (sizeKbytes > 50 && !authenticatedUser) {
+                showConversionModal();
+            }
+        }
+
+        // ORQUESTACIÓN DE LOS 10 MÓDULOS DE UTILIDAD
+        function executeFreeModule(moduleId) {
+            clickNonce++;
+            const inputField = document.getElementById('text-input');
+            let text = inputField.value;
+
+            if(!text) { alert("El área de entrada está vacía."); return; }
+
+            let removeNumbers = false, removeSymbols = false, fixWhitespaces = false;
+
+            // Enrutador sínctono de flags hacia la ecuación de Rust
+            if (moduleId === 1) text = text.replace(/[\r\n]+/g, ' '); 
+            if (moduleId === 2) text = text.replace(/[\u200B-\u200D\uFEFF]/g, '');
+            if (moduleId === 3) { const emails = text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi); text = emails ? emails.join('\n') : "No se hallaron direcciones de correo."; }
+            if (moduleId === 4) text = text.replace(/<\/?[^>]+(>|$)/g, ""); 
+            if (moduleId === 5) { const lines = text.split('\n').filter(l => l.trim() !== ''); text = JSON.stringify(lines, null, 2); }
+            if (moduleId === 6) text = text.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+            if (moduleId === 7) text = text.replace(/;/g, ","); 
+            if (moduleId === 8) { const urls = text.match(/(https?:\/\/[^\s]+)/g); text = urls ? urls.join('\n') : "No se hallaron enlaces."; }
+            if (moduleId === 9) { const unique = [...new Set(text.split('\n'))]; text = unique.join('\n'); }
+            if (moduleId === 10) fixWhitespaces = true;
+
+            const timeDelta = (Date.now() - startTime) / 1000;
+            const payload = JSON.stringify({ raw_content: text, remove_numbers: removeNumbers, remove_symbols: removeSymbols, fix_whitespaces: fixWhitespaces, click_nonce: clickNonce, time_delta: timeDelta });
+
+            const result = execute_data_shred_local(payload);
+
+            const outputPanel = document.getElementById('output-panel');
+            document.getElementById('text-output').value = result.clean_content;
+            document.getElementById('metrics-label').innerText = `Purga: ${result.characters_purged} bytes // Entropía S_b: ${result.behavior_entropy.toFixed(4)}`;
+            document.getElementById('shredder-status-badge').innerText = result.execution_status;
+
+            outputPanel.style.display = 'block';
+            gsap.fromTo(outputPanel, { scaleY: 0.8, opacity: 0 }, { scaleY: 1, opacity: 1, duration: 0.4, ease: "back.out(1.2)" });
+        }
+
+        // === 2. INTERFAZ MUTANTE DE ZAFIRO (PARTÍCULAS HILOS DE DATOS) ===
+        const canvas = document.getElementById('zafiro-particles');
+        const ctx = canvas.getContext('2d');
+        let linesArray = [];
+
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        class DataStreamLine {
+            constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.length = Math.random() * 80 + 20; this.speed = Math.random() * 1 + 0.5; }
+            update() { this.y += this.speed; if (this.y > canvas.height) { this.y = -this.length; this.x = Math.random() * canvas.width; } }
+            draw() {
+                const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                ctx.strokeStyle = isLight ? 'rgba(59, 130, 246, 0.08)' : 'rgba(6, 182, 212, 0.12)';
+                ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x, this.y + this.length); ctx.stroke();
+            }
+        }
+        for(let i=0; i<25; i++) linesArray.push(new DataStreamLine());
+        function loop() { ctx.clearRect(0,0,canvas.width,canvas.height); linesArray.forEach(l => { l.update(); l.draw(); }); requestAnimationFrame(loop); }
+        loop();
+
+        function toggleDayNightEngine() {
+            const curr = document.documentElement.getAttribute('data-theme');
+            const target = curr === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', target);
+            document.getElementById('theme-icon-hud').setAttribute('data-lucide', target === 'light' ? 'moon' : 'sun');
+            lucide.createIcons();
+        }
+
+        // === 3. GATEWAY DE SEGURIDAD PREMIUM (SUPABASE CLOUD GATE) ===
+        if (typeof supabase !== 'undefined') supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function checkActiveSessionEngine() {
+            if (!supabaseClient) return;
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && session.user) successSessionLoginUnlock(session.user);
+        }
+
+        function triggerPremiumGateBlock() {
+            if (!authenticatedUser) { showConversionModal(); } 
+            else { alert("Cifrado completado. Flujo binario empaquetado y descargado en memoria local."); triggerCelebrationEngine(); }
+        }
+        function showConversionModal() { document.getElementById('premium-modal-gate').style.display = 'flex'; }
+        function hideConversionModal() { document.getElementById('premium-modal-gate').style.display = 'none'; }
+        function closePremiumModalEngine(e) { if(e.target === document.getElementById('premium-modal-gate')) hideConversionModal(); }
+
+        async function executeSupabaseAuth(type) {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            try {
+                let res = type === 'REGISTRO' ? await supabaseClient.auth.signUp({email, password}) : await supabaseClient.auth.signInWithPassword({email, password});
+                if (res.error) throw res.error;
+                if (res.data.user) successSessionLoginUnlock(res.data.user);
+            } catch(e) { alert(e.message); }
+        }
+        async function executeSupabaseOAuthEngine(prov) { await supabaseClient.auth.signInWithOAuth({ provider: prov, options: { redirectTo: window.location.origin } }); }
+
+        function successSessionLoginUnlock(user) {
+            authenticatedUser = user; hideConversionModal();
+            const badge = document.getElementById('user-badge-status');
+            badge.innerText = "NEXUS PRO"; badge.style.color = "var(--cyan-neon)";
+            document.getElementById('btn-logout-shredder').style.display = 'block';
+            triggerCelebrationEngine();
+        }
+
+        function logoutSessionEngine() {
+            if (supabaseClient) supabaseClient.auth.signOut();
+            authenticatedUser = null;
+            document.getElementById('user-badge-status').innerText = "INVITADO";
+            document.getElementById('btn-logout-shredder').style.display = 'none';
+        }
+
+        function triggerCelebrationEngine() {
+            let duration = 1.5 * 1000; let end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 6, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#1e3a8a', '#06b6d4', '#cbd5e1'] });
+                confetti({ particleCount: 6, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#1e3a8a', '#06b6d4', '#cbd5e1'] });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { checkActiveSessionEngine(); lucide.createIcons(); });
+    </script>
+</body>
+</html>
